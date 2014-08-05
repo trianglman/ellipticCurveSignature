@@ -12,7 +12,7 @@ if test "$PHP_ELLIPTICCURVESIGNATURE" = "yes"; then
             AC_MSG_WARNING([openssl sha hash not found using custom])
         ],
         [
-            -Lopenssl -ldl
+            -ldl -lssl -lcrypto
         ])
     PHP_NEW_EXTENSION(ellipticCurveSignature, src/ecsig.c src/ed25519.c, $ext_shared)
     PHP_SUBST(SQRL_SHARED_LIBADD)
