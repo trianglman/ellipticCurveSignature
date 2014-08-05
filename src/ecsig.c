@@ -18,7 +18,7 @@ zend_module_entry ellipticCurveSignature_module_entry = {
     STANDARD_MODULE_HEADER,
     PHP_ELLIPTIC_CURVE_EXTNAME,
     ellipticCurveSignature_functions,
-    NULL,
+    ZEND_MINIT(ellipticCurveSignature),
     NULL,
     NULL,
     NULL,
@@ -31,17 +31,23 @@ zend_module_entry ellipticCurveSignature_module_entry = {
     ZEND_GET_MODULE(ellipticCurveSignature)
 #endif
 
-PHP_FUNCTION(ec_generate_pk)
+ZEND_MINIT_FUNCTION(ellipticCurveSignature)
+{
+    //register supported elliptic curve options
+    REGISTER_LONG_CONSTANT("EC_ED25519",1,CONST_CS|CONST_PERSISTENT);
+}
+
+ZEND_FUNCTION(ec_generate_pk)
 {
 
 }
 
-PHP_FUNCTION(ec_sign)
+ZEND_FUNCTION(ec_sign)
 {
 
 }
 
-PHP_FUNCTION(ec_verify)
+ZEND_FUNCTION(ec_verify)
 {
 
 }
