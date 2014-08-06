@@ -3,7 +3,7 @@
 #endif
 
 #include "php.h"
-#include "ecsig.h"
+#include "php_ellipticCurveSignature.h"
 #include "ed25519.h"
 
 
