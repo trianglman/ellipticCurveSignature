@@ -39,15 +39,89 @@ ZEND_MINIT_FUNCTION(ellipticCurveSignature)
 
 ZEND_FUNCTION(ec_generate_pk)
 {
+    const unsigned char *sk;
+    int skLen;
+    int curveType = 1;//EC_ED25519
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &sk, &skLen, &curveType) == FAILURE) {
+        RETURN_NULL();
+    }
+
+    switch (curveType) {
+        case 1: //EC_ED25519
+            if (skLen != 32) {
+                zend_error(E_ERROR, "Invalid secret key.");
+            }
+            ed25519_public_key pk;
+            ed25519_publickey(sk,pk);
+            RETURN_STRING(pk,32,1);
+        default:
+            zend_error(E_ERROR, "Invalid curve type.");
+    }
 
 }
 
 ZEND_FUNCTION(ec_sign)
 {
+    const unsigned char *sk;
+    int skLen;
+    const unsigned char *pk;
+    int pkLen;
+    const unsigned char *msg;
+    int msgLen;
+    int curveType = 1;//EC_ED25519
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss|l", &sk, &skLen, &pk, &pkLen, &msg, &msgLen, &curveType) == FAILURE) {
+        RETURN_NULL();
+    }
+
+    switch (curveType) {
+        case 1: //EC_ED25519
+            if (skLen != 32) {
+                zend_error(E_ERROR, "Invalid secret key.");
+            }
+            if (pkLen != 32) {
+                zend_error(E_ERROR, "Invalid public key.");
+            }
+            ed25519_signature sig;
+            ed25519_sign(msg, msgLen, sk, pk, sig);
+            RETURN_STRING(sig,64,1);
+        default:
+            zend_error(E_ERROR, "Invalid curve type.");
+    }
 
 }
 
 ZEND_FUNCTION(ec_verify)
 {
+    const unsigned char *pk;
+    int pkLen;
+    const unsigned char *orig;
+    int origLen;
+    const unsigned char *sig;
+    int sigLen;
+    int curveType = 1;//EC_ED25519
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss|l", &sig, &sigLen, &orig, &origLen, &pk, &pkLen, &curveType) == FAILURE) {
+        RETURN_NULL();
+    }
+    
+    switch (curveType) {
+        case 1: //EC_ED25519
+            if (pkLen != 32) {
+                zend_error(E_ERROR, "Invalid public key.");
+            }
+            if (sigLen !=64) {
+                zend_error(E_ERROR, "Invalid signature.");
+            }
+            int valid = ed25519_sign_open(orig, origLen, pk, sig);
+            if (valid == 0) {
+                RETURN_TRUE;
+            } else {
+                RETURN_FALSE;
+            }
+        default:
+            zend_error(E_ERROR, "Invalid curve type.");
+    }
 
 }
