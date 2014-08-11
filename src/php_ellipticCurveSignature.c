@@ -8,9 +8,9 @@
 
 
 static zend_function_entry ellipticCurveSignature_functions[] = {
-    ZEND_FE(ec_generate_pk,NULL),
-    ZEND_FE(ec_sign,NULL),
-    ZEND_FE(ec_verify,NULL),
+    ZEND_FE(ec_generate_pk,NULL)
+    ZEND_FE(ec_sign,NULL)
+    ZEND_FE(ec_verify,NULL)
     {NULL,NULL,NULL}
 };
 
@@ -24,7 +24,7 @@ zend_module_entry ellipticCurveSignature_module_entry = {
     NULL,
     NULL,
     PHP_ELLIPTIC_CURVE_VERSION,
-    STANDARD_MODULE_PROPERTIES_EX
+    STANDARD_MODULE_PROPERTIES
 };
 
 #if COMPILE_DL_ELLIPTICCURVESIGNATURE
@@ -54,7 +54,7 @@ ZEND_FUNCTION(ec_generate_pk)
             }
             ed25519_public_key pk;
             ed25519_publickey(sk,pk);
-            RETURN_STRING(pk,32,1);
+            RETURN_STRINGL(pk,32,1);
         default:
             zend_error(E_ERROR, "Invalid curve type.");
     }
@@ -85,7 +85,7 @@ ZEND_FUNCTION(ec_sign)
             }
             ed25519_signature sig;
             ed25519_sign(msg, msgLen, sk, pk, sig);
-            RETURN_STRING(sig,64,1);
+            RETURN_STRINGL(sig,64,1);
         default:
             zend_error(E_ERROR, "Invalid curve type.");
     }

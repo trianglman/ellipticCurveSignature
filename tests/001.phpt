@@ -10,7 +10,7 @@ if (!is_readable("tests/sign.input")) die("Skip: Signature input file not readab
     $inputFile = fopen("tests/sign.input", "r");
     $testLine = fgets($inputFile);
     while ($testLine !== false) {
-        list($skConcat, $pktest) = explode(':', $set);
+        list($skConcat, $pktest) = explode(':', $testLine);
         $sk = hex2bin(substr($skConcat, 0, 64));
         $pk = ec_generate_pk($sk,EC_ED25519);
         if ($pk !== hex2bin($pktest)) {
