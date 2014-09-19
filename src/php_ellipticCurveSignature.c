@@ -39,11 +39,11 @@ ZEND_MINIT_FUNCTION(ellipticCurveSignature)
 
 ZEND_FUNCTION(ec_generate_pk)
 {
-    const unsigned char *sk;
+    const char *skin;
     int skLen;
     int curveType = 1;//EC_ED25519
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &sk, &skLen, &curveType) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &skin, &skLen, &curveType) == FAILURE) {
         RETURN_NULL();
     }
 
@@ -53,6 +53,8 @@ ZEND_FUNCTION(ec_generate_pk)
                 zend_error(E_ERROR, "Invalid secret key.");
             }
             ed25519_public_key pk;
+            ed25519_secret_key sk;
+            strncpy(sk,skin,32);
             ed25519_publickey(sk,pk);
             RETURN_STRINGL(pk,32,1);
         default:
@@ -63,15 +65,15 @@ ZEND_FUNCTION(ec_generate_pk)
 
 ZEND_FUNCTION(ec_sign)
 {
-    const unsigned char *sk;
+    const char *skin;
     int skLen;
-    const unsigned char *pk;
+    const char *pkin;
     int pkLen;
-    const unsigned char *msg;
-    int msgLen;
+    const char *msgin;
+    size_t msgLen;
     int curveType = 1;//EC_ED25519
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss|l", &sk, &skLen, &pk, &pkLen, &msg, &msgLen, &curveType) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss|l", &skin, &skLen, &pkin, &pkLen, &msgin, &msgLen, &curveType) == FAILURE) {
         RETURN_NULL();
     }
 
@@ -83,8 +85,12 @@ ZEND_FUNCTION(ec_sign)
             if (pkLen != 32) {
                 zend_error(E_ERROR, "Invalid public key.");
             }
+            ed25519_secret_key sk;
+            ed25519_public_key pk;
             ed25519_signature sig;
-            ed25519_sign(msg, msgLen, sk, pk, sig);
+            strncpy(sk,skin,32);
+            strncpy(pk,pkin,32);
+            ed25519_sign(msgin, msgLen, sk, pk, sig);
             RETURN_STRINGL(sig,64,1);
         default:
             zend_error(E_ERROR, "Invalid curve type.");
@@ -94,15 +100,15 @@ ZEND_FUNCTION(ec_sign)
 
 ZEND_FUNCTION(ec_verify)
 {
-    const unsigned char *pk;
+    const char *pkin;
     int pkLen;
-    const unsigned char *orig;
+    const char *orig;
     int origLen;
-    const unsigned char *sig;
+    const char *sigin;
     int sigLen;
     int curveType = 1;//EC_ED25519
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss|l", &sig, &sigLen, &orig, &origLen, &pk, &pkLen, &curveType) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss|l", &sigin, &sigLen, &orig, &origLen, &pkin, &pkLen, &curveType) == FAILURE) {
         RETURN_NULL();
     }
     
@@ -114,6 +120,10 @@ ZEND_FUNCTION(ec_verify)
             if (sigLen !=64) {
                 zend_error(E_ERROR, "Invalid signature.");
             }
+            ed25519_signature sig;
+            ed25519_public_key pk;
+            strncpy(pk,pkin,32);
+            strncpy(sig,sigin,64);
             int valid = ed25519_sign_open(orig, origLen, pk, sig);
             if (valid == 0) {
                 RETURN_TRUE;

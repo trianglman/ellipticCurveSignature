@@ -16,7 +16,7 @@ if (!is_readable("tests/sign.input")) die("Skip: Signature input file not readab
         $msg = hex2bin($m);
         $sig = hex2bin(substr($sigConcat, 0, 128));
 
-        $actual = ec_sign($sk, $pk, $m, EC_ED25519);
+        $actual = ec_sign($sk, $pk, $msg, EC_ED25519);
         if ($actual !== $sig) {
             die("Signature failed to generate");
         }
