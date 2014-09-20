@@ -54,7 +54,7 @@ ZEND_FUNCTION(ec_generate_pk)
             }
             ed25519_public_key pk;
             ed25519_secret_key sk;
-            strncpy(sk,skin,32);
+            memcpy(sk,skin,32);
             ed25519_publickey(sk,pk);
             RETURN_STRINGL(pk,32,1);
         default:
@@ -88,8 +88,8 @@ ZEND_FUNCTION(ec_sign)
             ed25519_secret_key sk;
             ed25519_public_key pk;
             ed25519_signature sig;
-            strncpy(sk,skin,32);
-            strncpy(pk,pkin,32);
+            memcpy(sk,skin,32);
+            memcpy(pk,pkin,32);
             ed25519_sign(msgin, msgLen, sk, pk, sig);
             RETURN_STRINGL(sig,64,1);
         default:
@@ -122,8 +122,8 @@ ZEND_FUNCTION(ec_verify)
             }
             ed25519_signature sig;
             ed25519_public_key pk;
-            strncpy(pk,pkin,32);
-            strncpy(sig,sigin,64);
+            memcpy(pk,pkin,32);
+            memcpy(sig,sigin,64);
             int valid = ed25519_sign_open(orig, origLen, pk, sig);
             if (valid == 0) {
                 RETURN_TRUE;
