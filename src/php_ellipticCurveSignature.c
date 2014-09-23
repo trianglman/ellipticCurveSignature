@@ -6,11 +6,29 @@
 #include "php_ellipticCurveSignature.h"
 #include "ed25519.h"
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ellipticCurveSignature_ec_generate_pk,0,0,1)
+    ZEND_ARG_INFO(0,secretKey)
+    ZEND_ARG_INFO(0,curveType)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ellipticCurveSignature_ec_sign,0,0,3)
+    ZEND_ARG_INFO(0,secretKey)
+    ZEND_ARG_INFO(0,publicKey)
+    ZEND_ARG_INFO(0,message)
+    ZEND_ARG_INFO(0,curveType)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_ellipticCurveSignature_ec_verify,0,0,3)
+    ZEND_ARG_INFO(0,signature)
+    ZEND_ARG_INFO(0,original)
+    ZEND_ARG_INFO(0,publicKey)
+    ZEND_ARG_INFO(0,curveType)
+ZEND_END_ARG_INFO();
 
 static zend_function_entry ellipticCurveSignature_functions[] = {
-    ZEND_FE(ec_generate_pk,NULL)
-    ZEND_FE(ec_sign,NULL)
-    ZEND_FE(ec_verify,NULL)
+    ZEND_FE(ec_generate_pk,arginfo_ellipticCurveSignature_ec_generate_pk)
+    ZEND_FE(ec_sign,arginfo_ellipticCurveSignature_ec_sign)
+    ZEND_FE(ec_verify,arginfo_ellipticCurveSignature_ec_verify)
     {NULL,NULL,NULL}
 };
 
