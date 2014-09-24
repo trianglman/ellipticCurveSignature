@@ -59,7 +59,7 @@ ZEND_FUNCTION(ec_generate_pk)
 {
     const char *skin;
     int skLen;
-    int curveType = 1;//EC_ED25519
+    long curveType = 1;//EC_ED25519
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &skin, &skLen, &curveType) == FAILURE) {
         RETURN_NULL();
@@ -68,7 +68,7 @@ ZEND_FUNCTION(ec_generate_pk)
     switch (curveType) {
         case 1: //EC_ED25519
             if (skLen != 32) {
-                zend_error(E_ERROR, "Invalid secret key.");
+                zend_error(E_WARNING, "Invalid secret key.");
             }
             ed25519_public_key pk;
             ed25519_secret_key sk;
@@ -76,7 +76,7 @@ ZEND_FUNCTION(ec_generate_pk)
             ed25519_publickey(sk,pk);
             RETURN_STRINGL(pk,32,1);
         default:
-            zend_error(E_ERROR, "Invalid curve type.");
+            zend_error(E_WARNING, "Invalid curve type.");
     }
 
 }
@@ -88,8 +88,8 @@ ZEND_FUNCTION(ec_sign)
     const char *pkin;
     int pkLen;
     const char *msgin;
-    size_t msgLen;
-    int curveType = 1;//EC_ED25519
+    int msgLen;
+    long curveType = 1;//EC_ED25519
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss|l", &skin, &skLen, &pkin, &pkLen, &msgin, &msgLen, &curveType) == FAILURE) {
         RETURN_NULL();
@@ -98,10 +98,10 @@ ZEND_FUNCTION(ec_sign)
     switch (curveType) {
         case 1: //EC_ED25519
             if (skLen != 32) {
-                zend_error(E_ERROR, "Invalid secret key.");
+                zend_error(E_WARNING, "Invalid secret key.");
             }
             if (pkLen != 32) {
-                zend_error(E_ERROR, "Invalid public key.");
+                zend_error(E_WARNING, "Invalid public key.");
             }
             ed25519_secret_key sk;
             ed25519_public_key pk;
@@ -111,7 +111,7 @@ ZEND_FUNCTION(ec_sign)
             ed25519_sign(msgin, msgLen, sk, pk, sig);
             RETURN_STRINGL(sig,64,1);
         default:
-            zend_error(E_ERROR, "Invalid curve type.");
+            zend_error(E_WARNING, "Invalid curve type.");
     }
 
 }
@@ -124,7 +124,7 @@ ZEND_FUNCTION(ec_verify)
     int origLen;
     const char *sigin;
     int sigLen;
-    int curveType = 1;//EC_ED25519
+    long curveType = 1;//EC_ED25519
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss|l", &sigin, &sigLen, &orig, &origLen, &pkin, &pkLen, &curveType) == FAILURE) {
         RETURN_NULL();
@@ -133,10 +133,10 @@ ZEND_FUNCTION(ec_verify)
     switch (curveType) {
         case 1: //EC_ED25519
             if (pkLen != 32) {
-                zend_error(E_ERROR, "Invalid public key.");
+                zend_error(E_WARNING, "Invalid public key.");
             }
             if (sigLen !=64) {
-                zend_error(E_ERROR, "Invalid signature.");
+                zend_error(E_WARNING, "Invalid signature.");
             }
             ed25519_signature sig;
             ed25519_public_key pk;
@@ -149,7 +149,7 @@ ZEND_FUNCTION(ec_verify)
                 RETURN_FALSE;
             }
         default:
-            zend_error(E_ERROR, "Invalid curve type.");
+            zend_error(E_WARNING, "Invalid curve type.");
     }
 
 }
