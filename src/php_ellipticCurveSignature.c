@@ -69,6 +69,7 @@ ZEND_FUNCTION(ec_generate_pk)
         case 1: //EC_ED25519
             if (skLen != 32) {
                 zend_error(E_WARNING, "Invalid secret key.");
+                RETURN_NULL();
             }
             ed25519_public_key pk;
             ed25519_secret_key sk;
@@ -77,6 +78,7 @@ ZEND_FUNCTION(ec_generate_pk)
             RETURN_STRINGL(pk,32,1);
         default:
             zend_error(E_WARNING, "Invalid curve type.");
+            RETURN_NULL();
     }
 
 }
@@ -99,9 +101,11 @@ ZEND_FUNCTION(ec_sign)
         case 1: //EC_ED25519
             if (skLen != 32) {
                 zend_error(E_WARNING, "Invalid secret key.");
+                RETURN_NULL();
             }
             if (pkLen != 32) {
                 zend_error(E_WARNING, "Invalid public key.");
+                RETURN_NULL();
             }
             ed25519_secret_key sk;
             ed25519_public_key pk;
@@ -112,6 +116,7 @@ ZEND_FUNCTION(ec_sign)
             RETURN_STRINGL(sig,64,1);
         default:
             zend_error(E_WARNING, "Invalid curve type.");
+            RETURN_NULL();
     }
 
 }
@@ -134,9 +139,11 @@ ZEND_FUNCTION(ec_verify)
         case 1: //EC_ED25519
             if (pkLen != 32) {
                 zend_error(E_WARNING, "Invalid public key.");
+                RETURN_NULL();
             }
             if (sigLen !=64) {
                 zend_error(E_WARNING, "Invalid signature.");
+                RETURN_NULL();
             }
             ed25519_signature sig;
             ed25519_public_key pk;
@@ -150,6 +157,7 @@ ZEND_FUNCTION(ec_verify)
             }
         default:
             zend_error(E_WARNING, "Invalid curve type.");
+            RETURN_NULL();
     }
 
 }
